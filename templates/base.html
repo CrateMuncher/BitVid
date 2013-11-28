@@ -9,30 +9,33 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/vendor/custom.modernizr.min.js"></script>
     </head>
     <body>
-        <nav class="top-bar" data-top-bar>
-            <ul class="title-area">
-                <li class="name">
-                    <h1><a href="#">BitVid</a></h1>
-                </li>
-            </ul>
-            <section class="top-bar-section">
-                <ul class="left">
+        <div class="fixed contain-to-grid">
+            <nav class="top-bar" data-top-bar>
+                <ul class="title-area">
+                    <li class="name">
+                        <h1><a href="#">BitVid</a></h1>
+                    </li>
                 </ul>
-                <ul class="right">
-                    {% if logged_in_user != None %}
-                        <li class="has-dropdown not-click">
-                            <a>Logged in as {{ logged_in_user.username }}</a>
-                            <ul class="dropdown">
-                                <li><a href="/logout">Log out</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="active"><a href="/login">Log in</a></li>
-                        <li><a href="/signup">Sign up</a></li>
-                    {% endif %}
-                </ul>
-            </section>
-        </nav>
+                <section class="top-bar-section">
+                    <ul class="left">
+                    </ul>
+                    <ul class="right">
+                        {% if logged_in_user != None %}
+                            <li class="has-dropdown not-click">
+                                <a>Logged in as {{ logged_in_user.username }}</a>
+                                <ul class="dropdown">
+                                    <li><a href="/logout">Log out</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="active"><a href="/login">Log in</a></li>
+                            <li><a href="/signup">Sign up</a></li>
+                        {% endif %}
+                    </ul>
+                </section>
+            </nav>
+        </div>
+
         <div class="row">
             <h1 class="spacer"></h1>
             {% if error != None %}
