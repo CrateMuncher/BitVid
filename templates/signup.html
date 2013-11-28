@@ -2,13 +2,14 @@
 
 {% block content %}
     <h1>Sign Up</h1>
-    <form data-abide>
+    <form method="POST" action="/signup" data-abide>
+        {% csrf_token %}
         <div class="row">
             <div class="small-2 columns">
                 <label for="username-label" class="right inline">Username</label>
             </div>
             <div class="small-10 columns">
-                <input type="text" id="username-label" placeholder="AzureDiamond" pattern="[a-zA-Z0-9_]+" required>
+                <input type="text" id="username-label" name="username" placeholder="AzureDiamond" pattern="[a-zA-Z0-9_]+" required>
                 <small class="error">Username must only contain letters, numbers and underscores.</small>
             </div>
         </div>
@@ -17,7 +18,7 @@
                 <label for="password-label" class="right inline">Password</label>
             </div>
             <div class="small-10 columns">
-                <input type="password" id="password-label" placeholder="hunter2" pattern="^.{7,}$" required>
+                <input type="password" id="password-label" name="password" placeholder="hunter2" pattern="^.{7,}$" required>
                 <small class="error">Password must be at least 7 characters long.</small>
             </div>
         </div>
@@ -26,7 +27,7 @@
                 <label for="password-label" class="right inline">E-mail</label>
             </div>
             <div class="small-10 columns">
-                <input type="email" id="password-label" placeholder="hunter2" required>
+                <input type="email" id="password-label" name="email" placeholder="hunter2" required>
                 <small class="error">Must be a valid e-mail.</small>
             </div>
         </div>

@@ -6,7 +6,9 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     url(r'^$', 'main.views.home', name='home'),
-    url(r'^login', 'main.views.login', name='login')
+    url(r'^login', 'main.views.login', name='login'),
+    url(r'^signup', 'main.views.signup', name='signup'),
+    url(r'^logout', 'main.views.logout', name='logout')
     # Examples:
     # url(r'^$', 'bitvid.views.home', name='home'),
     # url(r'^bitvid/', include('bitvid.foo.urls')),
