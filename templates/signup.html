@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Sign Up</h1>
+    <form data-abide>
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="username-label" class="right inline">Username</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="text" id="username-label" placeholder="AzureDiamond" pattern="[a-zA-Z0-9_]+" required>
+                <small class="error">Username must only contain letters, numbers and underscores.</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="password-label" class="right inline">Password</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="password" id="password-label" placeholder="hunter2" pattern="^.{7,}$" required>
+                <small class="error">Password must be at least 7 characters long.</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="password-label" class="right inline">E-mail</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="email" id="password-label" placeholder="hunter2" required>
+                <small class="error">Must be a valid e-mail.</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-10 small-offset-2 columns">
+                <ul class="button-group">
+                    <li><input type="submit" class="button primary" value="Sign Up"></li>
+                </ul>
+            </div>
+        </div>
+    </form>
+{% endblock %}

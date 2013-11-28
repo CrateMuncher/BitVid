@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Log In</h1>
+    <form action="/login" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="username-label" class="right inline">Username</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="text" id="username-label" placeholder="AzureDiamond" name="username" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="password-label" class="right inline">Password</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="password" id="password-label" placeholder="hunter2" name="password" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-10 small-offset-2 columns">
+                <ul class="button-group">
+                    <li><input type="submit" class="button primary" value="Log In"></li>
+                    <li><a href="#" class="button secondary">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -1,6 +1,48 @@
+<!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BitVid - {% block title %}{% endblock %}</title>
-        <
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/css/foundation.min.css">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/css/normalize.min.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/vendor/custom.modernizr.min.js"></script>
     </head>
+    <body>
+        <nav class="top-bar" data-top-bar>
+            <ul class="title-area">
+                <li class="name">
+                    <h1><a href="#">BitVid</a></h1>
+                </li>
+            </ul>
+
+            <section class="top-bar-section">
+                <ul class="left">
+                </ul>
+                <ul class="right">
+                </ul>
+            </section>
+        </nav>
+        <div class="row">
+            {% if error != None %}
+                <div data-alert class="alert-box error radius">
+                    {{ error }}
+                    <a href="#" class="close">&times;</a>
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/vendor/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/foundation.min.js"></script>
+        <script>
+            $(document)
+                    .foundation()
+                    .foundation('abide', {
+                        patterns: {
+                            password: ""
+                        }
+                    });
+        </script>
+    </body>
 </html>

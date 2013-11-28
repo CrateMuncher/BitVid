@@ -5,7 +5,8 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'main.views.home', name='home')
+    url(r'^$', 'main.views.home', name='home'),
+    url(r'^login', 'main.views.login', name='login')
     # Examples:
     # url(r'^$', 'bitvid.views.home', name='home'),
     # url(r'^bitvid/', include('bitvid.foo.urls')),
@@ -16,3 +17,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
 )
+
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+urlpatterns += staticfiles_urlpatterns()
