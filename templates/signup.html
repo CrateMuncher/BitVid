@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Sign Up</h1>
-    <form method="POST" action="/signup" data-abide>
+    <form method="POST" action="{% url "signup" %}" data-abide>
         {% csrf_token %}
         <div class="row">
             <div class="small-2 columns">

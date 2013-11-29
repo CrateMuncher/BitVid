@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Create a channel</h1>
+    <form action="{% url "create_channel" %}" method="POST" data-abide>
+        {% csrf_token %}
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="name-label" class="right inline">Name</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="text" id="name-label" name="name" pattern="[A-Za-z0-9_-]+" required>
+                <small class="error">Name must not be blank and only contain letters, numbers, underscores and hyphens.</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-10 small-offset-2 columns">
+                <ul class="button-group">
+                    <li><input type="submit" class="button primary" value="Create Channel"></li>
+                </ul>
+            </div>
+        </div>
+    </form>
+{% endblock %}

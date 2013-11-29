@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>My Channels</h1>
+    {% if logged_in_user.channels.all.exists %}
+        {% for channel in logged_in_user.channels.all %}
+            <div class="row">
+                <a href="{% url "view_channel" channel.name %}"><h3>{{ channel.name }}</h3></a>
+                <strong>Members:</strong> {% for channel_member in channel.members.all %}{{ channel_member.nickname }}{% endfor %}
+            </div>
+            <hr>
+        {% endfor %}
+        <div class="row">
+            <h4><a href="{% url "create_channel" %}">Create another one?</a></h4>
+        </div>
+    {% else %}
+        You have no channels :( <a href="{% url "create_channel" %}">Make one?</a>
+    {% endif %}
+{% endblock %}

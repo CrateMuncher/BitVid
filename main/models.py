@@ -8,25 +8,45 @@ import random
 class Channel(models.Model):
     name = models.CharField(max_length=64)
 
-    is_active = models.BooleanField()
+    STATUS_ACTIVE = 'AC'
+    STATUS_DELETED = 'DL'
 
-    videoes = models.ForeignKey('Video')
+    STATUS_CHOICES = (
+        (STATUS_ACTIVE, 'Active'),
+        (STATUS_DELETED, 'Deleted'),
+    )
+
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
+    subscribers = models.ManyToManyField('User', related_name="subscriptions")
 
 
 class Video(models.Model):
-    title = models.CharField(max_length=64)
-    description = models.TextField()
+    STATUS_UPLOADING = 'UP'
+    STATUS_TRANSCODING = 'TC'
+    STATUS_ACTIVE = 'AC'
+    STATUS_TAKENDOWN = 'TD'
 
-    is_active = models.BooleanField()
+    STATUS_CHOICES = (
+        (STATUS_UPLOADING, 'Unconfirmed'),
+        (STATUS_TRANSCODING, 'Transcoding'),
+        (STATUS_ACTIVE, 'Active'),
+        (STATUS_TAKENDOWN, 'Taken Down'),
+    )
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
+
+    title = models.CharField(max_length=64, default="")
+    description = models.TextField(default="")
 
     uploader = models.OneToOneField('User')
 
-    likers = models.ManyToManyField('User', related_name="liked_videoes")
-    dislikers = models.ManyToManyField('User', related_name="disliked_videoes")
+    likers = models.ManyToManyField('User', related_name="liked_videoes", blank=True, null=True)
+    dislikers = models.ManyToManyField('User', related_name="disliked_videoes", blank=True, null=True)
 
-    views = models.IntegerField()
+    views = models.IntegerField(default=0)
 
-    comments = models.ForeignKey('Comment')
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    channel = models.ForeignKey('Channel', related_name='video', blank=True, null=True)
 
 
 class User(models.Model):
@@ -39,16 +59,20 @@ class User(models.Model):
         (STATUS_ACTIVE, 'Active'),
         (STATUS_DISABLED, 'Disabled')
     )
-    username = models.CharField(max_length=64, unique=True)
-    password = models.CharField(max_length=256)
-    email = models.CharField(max_length=256)
-    nickname = models.CharField(max_length=64)
+    username = models.CharField(max_length=64, unique=True, default="")
+    password = models.CharField(max_length=256, default="")
+    email = models.CharField(max_length=256, default="")
+    nickname = models.CharField(max_length=64, default="")
 
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
 
-    login_token = models.CharField(max_length=64)
+    login_token = models.CharField(max_length=64, default="")
 
-    channels = models.ManyToManyField('Channel')
+    tags = models.ManyToManyField('Tag', related_name="videoes", blank=True, null=True)
+
+    channels = models.ManyToManyField('Channel', related_name="members", blank=True, null=True)
+
+    registration_date = models.DateTimeField(auto_now_add=True)
 
     @staticmethod
     def signup(username, password, email):
@@ -59,6 +83,7 @@ class User(models.Model):
 
         user = User.objects.create(username=username, password=hashed_pass, email=email, nickname=username)
         user.save()
+
         return user
 
     @staticmethod
@@ -91,16 +116,30 @@ class User(models.Model):
 
     def refresh_token(self):
         new_token = ''.join(
-                random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(64))
+            random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(64))
         self.login_token = new_token
         self.save()
         return new_token
 
 
 class Comment(models.Model):
-    author = models.OneToOneField('User')
+    upload_date = models.DateTimeField(auto_now_add=True)
 
-    content = models.TextField()
+    content = models.TextField(default="")
 
-    likers = models.ManyToManyField('User', related_name="liked_comments")
-    dislikers = models.ManyToManyField('User', related_name="disliked_comments")
+    likers = models.ManyToManyField('User', related_name="liked_comments", blank=True, null=True)
+    dislikers = models.ManyToManyField('User', related_name="disliked_comments", blank=True, null=True)
+
+    video = models.ForeignKey('Video', related_name='comments', blank=True, null=True)
+
+
+class VideoFile(models.Model):
+    format = models.CharField(max_length=5, default="")
+    codec = models.CharField(max_length=128, default="")
+    url = models.URLField(blank=True, null=True)
+
+    video = models.ForeignKey('Video', related_name="video_files", blank=True, null=True)
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=64, unique=True)

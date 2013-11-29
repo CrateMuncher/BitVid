@@ -24,12 +24,13 @@
                             <li class="has-dropdown not-click">
                                 <a>Logged in as {{ logged_in_user.username }}</a>
                                 <ul class="dropdown">
-                                    <li><a href="/logout">Log out</a></li>
+                                    <li><a href="{% url "channels" %}">My channels</a></li>
+                                    <li><a href="{% url "logout" %}">Log out</a></li>
                                 </ul>
                             </li>
                         {% else %}
-                            <li class="active"><a href="/login">Log in</a></li>
-                            <li><a href="/signup">Sign up</a></li>
+                            <li class="active"><a href="{% url "login" %}">Log in</a></li>
+                            <li><a href="{% url "signup" %}">Sign up</a></li>
                         {% endif %}
                     </ul>
                 </section>

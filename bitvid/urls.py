@@ -8,7 +8,10 @@ urlpatterns = patterns('',
     url(r'^$', 'main.views.home', name='home'),
     url(r'^login', 'main.views.login', name='login'),
     url(r'^signup', 'main.views.signup', name='signup'),
-    url(r'^logout', 'main.views.logout', name='logout')
+    url(r'^logout', 'main.views.logout', name='logout'),
+    url(r'^channels', 'main.views.channels', name='channels'),
+    url(r'^create_channel', 'main.views.create_channel', name='create_channel'),
+    url(r'^channel/(?P<channel>\w+)', 'main.views.view_channel', name='view_channel'),
     # Examples:
     # url(r'^$', 'bitvid.views.home', name='home'),
     # url(r'^bitvid/', include('bitvid.foo.urls')),

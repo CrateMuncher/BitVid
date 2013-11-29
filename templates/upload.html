@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Upload</h1>
+    <form action="{% url "upload" %}" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="username-label" class="right inline">Title</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="text" id="username-label" placeholder="AzureDiamond" name="title" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="password-label" class="right inline">Description</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="password" id="password-label" placeholder="hunter2" name="description" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-2 columns">
+                <label for="password-label" class="right inline">Tags</label>
+            </div>
+            <div class="small-10 columns">
+                <input type="password" id="password-label" placeholder="hunter2" name="tags" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-10 small-offset-2 columns">
+                <ul class="button-group">
+                    <li><input type="submit" class="button primary" value="Log In"></li>
+                    <li><a href="/signup" class="button secondary">Upload</a></li>
+                </ul>
+            </div>
+        </div>
+    </form>
+{% endblock %}
