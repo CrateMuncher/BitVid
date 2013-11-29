@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BitVid</title>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/css/foundation.min.css">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/css/normalize.min.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/vendor/custom.modernizr.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/vendor/jquery.min.js"></script>
+        <link href="//vjs.zencdn.net/4.2/video-js.css" rel="stylesheet">
+        <script src="//vjs.zencdn.net/4.2/video.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/foundation.min.js"></script>
+        <script>
+            $(document).foundation();
+        </script>
+        <script type="text/javascript">
+            document.createElement('video');document.createElement('audio');
+        </script>
+    </head>
+    <body>
+        <div class="sticky contain-to-grid">
+            <nav class="top-bar" data-top-bar>
+                <ul class="title-area">
+                    <li class="name">
+                        <h1><a href="#">BitVid</a></h1>
+                    </li>
+                </ul>
+                <section class="top-bar-section">
+                    <ul class="left">
+                    </ul>
+                    <ul class="right">
+                        {% if logged_in_user != None %}
+                            <li class="has-dropdown not-click">
+                                <a>Logged in as {{ logged_in_user.username }}</a>
+                                <ul class="dropdown">
+                                    <li><a href="{% url "channels" %}">My channels</a></li>
+                                    <li><a href="{% url "upload" %}">Upload a video</a></li>
+                                    <li><a href="{% url "logout" %}">Log out</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="active"><a href="{% url "login" %}">Log in</a></li>
+                            <li><a href="{% url "signup" %}">Sign up</a></li>
+                        {% endif %}
+                    </ul>
+                </section>
+            </nav>
+        </div>
+
+        <div class="row">
+            <h1 class="spacer"></h1>
+            {% if error != None %}
+                <div data-alert class="alert-box warning radius">
+                    {{ error }}
+                    <a href="#" class="close">&times;</a>
+                </div>
+            {% endif %}
+
+            {% if info != None %}
+                <div data-alert class="alert-box info radius">
+                    {{ info }}
+                    <a href="#" class="close">&times;</a>
+                </div>
+            {% endif %}
+
+            {% if success != None %}
+                <div data-alert class="alert-box success radius">
+                    {{ success }}
+                    <a href="#" class="close">&times;</a>
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>
