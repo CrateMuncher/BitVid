@@ -7,6 +7,16 @@
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/css/foundation.min.css">
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/css/normalize.min.css">
         <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/vendor/custom.modernizr.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/vendor/jquery.min.js"></script>
+        <link href="//vjs.zencdn.net/4.2/video-js.css" rel="stylesheet">
+        <script src="//vjs.zencdn.net/4.2/video.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/foundation.min.js"></script>
+        <script>
+            $(document).foundation();
+        </script>
+        <script type="text/javascript">
+            document.createElement('video');document.createElement('audio');
+        </script>
     </head>
     <body>
         <div class="sticky contain-to-grid">
@@ -25,6 +35,7 @@
                                 <a>Logged in as {{ logged_in_user.username }}</a>
                                 <ul class="dropdown">
                                     <li><a href="{% url "channels" %}">My channels</a></li>
+                                    <li><a href="{% url "upload" %}">Upload a video</a></li>
                                     <li><a href="{% url "logout" %}">Log out</a></li>
                                 </ul>
                             </li>
@@ -62,16 +73,5 @@
 
             {% block content %}{% endblock %}
         </div>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/vendor/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.0.2/js/foundation.min.js"></script>
-        <script>
-            $(document)
-                    .foundation()
-                    .foundation('abide', {
-                        patterns: {
-                            password: ""
-                        }
-                    });
-        </script>
     </body>
 </html>

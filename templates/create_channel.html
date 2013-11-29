@@ -9,8 +9,8 @@
                 <label for="name-label" class="right inline">Name</label>
             </div>
             <div class="small-10 columns">
-                <input type="text" id="name-label" name="name" pattern="[A-Za-z0-9_-]+" required>
-                <small class="error">Name must not be blank and only contain letters, numbers, underscores and hyphens.</small>
+                <input type="text" id="name-label" name="name" pattern="^[A-Za-z0-9_-]+$" required>
+                <small class="error">Name must not be blank and only contain letters, numbers, underscores and hyphens, and must not contain spaces.</small>
             </div>
         </div>
         <div class="row">

@@ -6,7 +6,7 @@ import random
 
 
 class Channel(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
 
     STATUS_ACTIVE = 'AC'
     STATUS_DELETED = 'DL'
@@ -22,12 +22,14 @@ class Channel(models.Model):
 
 class Video(models.Model):
     STATUS_UPLOADING = 'UP'
+    STATUS_WAITING = 'WT'
     STATUS_TRANSCODING = 'TC'
     STATUS_ACTIVE = 'AC'
     STATUS_TAKENDOWN = 'TD'
 
     STATUS_CHOICES = (
         (STATUS_UPLOADING, 'Unconfirmed'),
+        (STATUS_WAITING, 'Waiting for transcoder'),
         (STATUS_TRANSCODING, 'Transcoding'),
         (STATUS_ACTIVE, 'Active'),
         (STATUS_TAKENDOWN, 'Taken Down'),
@@ -37,14 +39,14 @@ class Video(models.Model):
     title = models.CharField(max_length=64, default="")
     description = models.TextField(default="")
 
-    uploader = models.OneToOneField('User')
+    uploader = models.ForeignKey('User')
 
     likers = models.ManyToManyField('User', related_name="liked_videoes", blank=True, null=True)
     dislikers = models.ManyToManyField('User', related_name="disliked_videoes", blank=True, null=True)
 
     views = models.IntegerField(default=0)
 
-    created_date = models.DateTimeField(auto_now_add=True)
+    uploaded_date = models.DateTimeField(auto_now_add=True)
 
     channel = models.ForeignKey('Channel', related_name='video', blank=True, null=True)
 

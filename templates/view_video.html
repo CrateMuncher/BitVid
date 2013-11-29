@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ video.title }}</h2>
+    <video width="100%" class="bitvid-video video-js vjs-default-skin" data-setup controls preload="auto">
+        {% for videofile in video.video_files.all %}
+            <source src="{{ videofile.url }}" type="{{ videofile.format }}">
+        {% endfor %}
+    </video>
+    <hr>
+    <div class="large-9 columns">
+        <strong>Uploaded by {{ video.uploader.nickname }} to {{ video.channel.name }} at {{ video.uploaded_date|date:"DATETIME_FORMAT" }}</strong>
+        <br>
+        {{ video.description }}
+    </div>
+    <div class="large-3 columns">
+        Lorem ipsum I'll put some stuff here later
+    </div>
+    <hr>
+    <div class="comments">
+        <h2>Comments go here some time later :D</h2>
+    </div>
+    <script type="text/javascript">
+      // Once the video is ready
+      $(".bitvid-video").ready(function(){
+        var myPlayer = $(".bitvid-video");
+        var aspectRatio = 16/9;
+
+        function resizeVideoJS(){
+          var width = $(".bitvid-video").width();
+          $(".bitvid-video").height(width / aspectRatio);
+        }
+
+        resizeVideoJS();
+        window.onresize = resizeVideoJS;
+        setInterval(resizeVideoJS, 50);
+      });
+    </script>
+
+{% endblock %}

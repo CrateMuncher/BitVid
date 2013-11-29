@@ -2,39 +2,115 @@
 
 {% block content %}
     <h1>Upload</h1>
-    <form action="{% url "upload" %}" method="POST">
+    <form action="{% url "upload" %}" method="POST" class="upload-form" data-abide>
         {% csrf_token %}
-        <div class="row">
-            <div class="small-2 columns">
-                <label for="username-label" class="right inline">Title</label>
-            </div>
-            <div class="small-10 columns">
-                <input type="text" id="username-label" placeholder="AzureDiamond" name="title" required>
+        <h5 class="status"></h5>
+        <div class="progress upload-container">
+            <span class="meter upload-progress"></span>
+        </div>
+        <div class="row hide-later">
+            <div class="small-offset-2 small-10 columns">
+                <span class="button secondary file-button fluid" id="file-label">Upload File</span>
+                <input type="file" class="real-file-input" name="file" required>
+                <small class="error">You must select a file.</small>
             </div>
         </div>
-        <div class="row">
+        <div class="row hide-first">
             <div class="small-2 columns">
-                <label for="password-label" class="right inline">Description</label>
+                <label for="title-label" class="right inline">File Selected</label>
             </div>
             <div class="small-10 columns">
-                <input type="password" id="password-label" placeholder="hunter2" name="description" required>
+                <input type="text" class="file-name" disabled>
             </div>
         </div>
-        <div class="row">
+        <div class="row hide-first">
             <div class="small-2 columns">
-                <label for="password-label" class="right inline">Tags</label>
+                <label for="title-label" class="right inline">Title</label>
             </div>
             <div class="small-10 columns">
-                <input type="password" id="password-label" placeholder="hunter2" name="tags" required>
+                <input type="text" class="title-input" id="title-label" name="title" required>
+                <small class="error">You must enter a title.</small>
             </div>
         </div>
-        <div class="row">
+        <div class="row hide-first">
+            <div class="small-2 columns">
+                <label for="desc-label" class="right inline">Description</label>
+            </div>
+            <div class="small-10 columns">
+                <textarea id="desc-label" name="desc" pattern="^.{0,2000}$"></textarea>
+                <small class="error">You can only have 2000 characters in the description!</small>
+            </div>
+        </div>
+        <div class="row hide-first">
+            <div class="small-2 columns">
+                <label for="channel-label" class="right inline">Channel</label>
+            </div>
+            <div class="small-10 columns">
+                <select id="channel-label" required name="channel">
+                    {% for channel in logged_in_user.channels.all %}
+                        <option value="{{ channel.id }}">{{ channel.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row hide-first">
             <div class="small-10 small-offset-2 columns">
                 <ul class="button-group">
-                    <li><input type="submit" class="button primary" value="Log In"></li>
-                    <li><a href="/signup" class="button secondary">Upload</a></li>
+                    <li><span class="button primary upload-button">Upload</span></li>
                 </ul>
             </div>
         </div>
     </form>
+    <script type="text/javascript">
+        $(function () {
+            $(".real-file-input").hide();
+            $(".hide-first").hide();
+            $(".file-button").click(function () {
+                $(".real-file-input").click();
+            });
+            $(".real-file-input").change(function () {
+                $(".hide-later").slideUp();
+                $(".hide-first").slideDown();
+                var file = this.files[0];
+                $(".file-name").val(file.name);
+                $(".title-input").val(file.name.split(".")[0]);
+            });
+            $(".upload-button").click(function() {
+                var formData = new FormData($(".upload-form")[0])
+                $.ajax({
+                    url: '{% url "upload" %}',
+                    type: 'POST',
+                    data: formData,
+                    cache: false,
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.onprogress = function(evt) {
+                            var fraction = evt.loaded / evt.total;
+                            if (fraction < 0.98) {
+                                $(".upload-progress").css("width", (fraction*100 + "%"));
+                                $(".status").html("Uploading: "+(fraction*100+"%"));
+                            } else {
+                                $(".status").html("Finalizing...");
+                            }
+                        };
+                        return xhr;
+                    },
+                    error: function(xhr, status, error) {
+                        $(".upload-progress").removeClass("success"),
+                        $(".upload-progress").addClass("error");
+                        $(".upload-progress").css("width", 100+"%");
+                        $(".status").html("Error: " + error);
+                    },
+                    success: function(data, status) {
+                        $(".upload-progress").removeClass("error");
+                        $(".upload-progress").addClass("success");
+                        $(".upload-progress").css("width", 100+"%");
+                        window.location.href = "/video/" + data;
+                    },
+                    contentType: false,
+                    processData: false
+                });
+            });
+        });
+    </script>
 {% endblock %}

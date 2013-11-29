@@ -76,6 +76,10 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+FILE_UPLOAD_HANDLERS = (
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+)
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '8_q9m9l31k+bfwy#sigp-=1)uvl@p2q!sl@*edw0^a$nb8mez@'
 
