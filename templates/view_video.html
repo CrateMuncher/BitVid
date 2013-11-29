@@ -1,40 +1,456 @@
-{% extends "base.html" %}
 
-{% block content %}
-    <h2>{{ video.title }}</h2>
-    <video width="100%" class="bitvid-video video-js vjs-default-skin" data-setup controls preload="auto">
-        {% for videofile in video.video_files.all %}
-            <source src="{{ videofile.url }}" type="{{ videofile.format }}">
+<!DOCTYPE html>
+<html>
+<link href="http://vjs.zencdn.net/4.2/video-js.css" rel="stylesheet">
+
+
+<script src="Http://vjs.zencdn.net/4.2/video.js"></script>
+<script src="http://vidcaster.github.io/video-js-resolutions/video-js-resolutions/video-js-resolutions.js"></script>
+<head>
+	<title>BitVid</title>
+	<script>
+		function subs()
+		{
+			document.getElementById("subs").style.display = 'block';
+			document.getElementById("channel").style.display = 'none';
+			document.getElementById("suggested").style.display = 'none';
+		}
+		function channel()
+		{
+			document.getElementById("subs").style.display = 'none';
+			document.getElementById("channel").style.display = 'block';
+			document.getElementById("suggested").style.display = 'none';
+		}
+		function suggested()
+		{
+			document.getElementById("subs").style.display = 'none';
+			document.getElementById("channel").style.display = 'none';
+			document.getElementById("suggested").style.display = 'block';
+		}
+	</script>
+	<style type="text/css">
+	body{
+		background-color: #F9F9F9;
+	}
+	
+	.header
+	{
+		background:radial-gradient(#555555,#333333);
+		color: #EEEEEE;
+		position:fixed;
+		left:0px;
+		top:0px;
+		width: 100% ;
+		font-family:"Arial", Arial, Sans-serif;
+		z-index: 100;
+		border-bottom-style: solid;
+		border-bottom-width: 1px;
+		border-bottom-color: #DDDDDD;
+	}
+	
+	.header a
+	{
+		text-decoration:none;
+		color: #EEEEEE;
+		text-shadow: 0px 0px 3px black;
+		display: inline-block;
+		padding: 8px;
+		transition:color .2s;
+	}
+	
+	
+	.header a:hover
+	{
+		color:#BB55CC;
+		text-shadow: 0px 0px 6px black;
+	}
+	.rightlink
+
+	{
+		float:right;
+		margin-left:20px;
+	}
+	.leftlink
+	{
+		float:left;
+		margin-left: 40px;
+	}
+	#account:hover ~.account
+	{
+		display: block;
+	}
+	.account:hover
+	{
+		display: block;
+	}
+	.account
+	{
+		display: none;
+		min-width: 25px;
+		min-height: 50px;
+		position: fixed;
+		right: 0px;
+		z-index: 90;
+		top: 34px;
+		background-color: #333333;
+		border: solid 1px #BBBBBB;
+		border-top-width: 0px;
+		border-right-width: 0px;
+	}
+	.searchbox
+	{
+		position:fixed;
+		left:335px;
+		height: 20px;
+		top: 6px;
+		width: 500px;
+		max-width: calc(100% - 625px);
+		border-style: solid;
+		border-width: 1px;
+		border-color: #DDDDDD;
+		background-color: #555555;
+		color: #DDDDDD;
+		box-shadow: 0px 0px 1px #DDDDDD;
+		
+	}
+	
+	.searchbox:focus
+	{
+		outline:none;
+		box-shadow: 0px 0px 5px #BB55CC;
+	}
+	.menu
+	{
+		position: fixed;
+		min-height: 100px;
+		height: calc(100% - 425px);
+		left: 50px;
+		top:85px;
+		background-color: #FFFFFF;
+		font-family:"Arial", Arial, Sans-serif;
+		font-size: 15px;
+		padding: 2px;
+		border-style: solid;
+		border-width: 1px;
+		border-color: #555555;
+	}
+	
+	.menu h1
+	{
+		font-family:"Arial", Arial, Sans-serif;
+		font-size: 15px;
+	}
+	.menu form
+	{
+		
+	}
+	.menu p
+	{
+		padding: 10px;
+	}
+	
+	.input
+	{
+		width:100px;
+		float: left;
+		
+	}
+	
+	.bannerAd
+	{
+		top: 85px;
+		left: 335px;
+		width: calc(100% - 50px);
+		height: 50px;
+		background-color: #9944AA;
+		color: white;
+		margin-bottom: 15px;
+	}
+	.otherAd
+	{
+		position: fixed;
+		left: 50px;
+		top: calc(100% - 300px);
+		width: 233px;
+		height: 250px;
+		background-color: #9944AA;
+		color: white;
+	}
+	.content
+	{
+		position:absolute;
+		z-index: 1;
+		left: 335px;
+		top: 35px;
+		width: calc(100% - 385px);
+		height: calc(100% - 90px);
+		box-shadow: -1px 0px 0px #BBBBBB;
+		padding-top: 55px;
+		padding-left: 50px;
+		overflow: scroll;
+	}
+	
+	.content img
+	{
+		height: auto;
+		width: auto;
+		max-height: calc(100% - 125px);
+		max-width: calc(100% - 50px);
+	}
+	.content .h1
+	{
+		font-family:"Arial", Arial, Sans-serif;
+		font-size: 1.6em;
+	}
+	
+	.content .video
+	{
+		width:100%;
+		height: 500px;
+		background-color: black;
+	}
+	
+	div + p {
+	     color: red;
+	} 
+	input[type=radio] 
+	{
+		display:none; 
+		margin:10px;
+	}
+	
+	input[type=radio] + label {
+	    display:inline-block;
+	    margin:-2px;
+	    padding: 4px 12px;
+	    background-color: #555555;
+	    border-color: #EEEEEE;
+	    border-bottom-style: solid;
+		border-bottom-width: 1px;
+		border-top-width: 0px;
+		color: #EEEEEE;
+		transition: text-shadow .2s;
+	}
+	#radio1 + label
+	{
+		border-right-width: 1px;
+	}
+	#radio2 + label
+	{
+		border-left-style: solid;
+		border-right-style: solid;
+		border-left-width: 1px;
+		border-right-width: 1px;
+		border-left-color:#DDDDDD;
+		border-right-color:#DDDDDD;
+	}
+	#radio3 + label
+	{
+		
+	}
+	input[type=radio]:checked + label { 
+	   background-image: none;
+	    background-color:#FFFFFF;
+	    border-bottom-width: 1px;
+	    border-bottom-color: #FFFFFF;
+	    color: #9944AA;
+	    text-shadow: 0px 0px 0px white;
+	}
+	label:hover { 
+	   text-shadow: 0px 0px 5px black;
+	   cursor: pointer;
+	}
+	
+	#subs
+	{
+		display: block;
+	}
+	#channel
+	{
+		display: none;
+	}
+	#suggested
+	{
+		display: none;
+	}
+	.description
+	{
+		width: calc(100% - 50px);
+		min-height: 200px;
+		background-color: #FFFFFF;
+		border: solid 1px #555555;
+		margin-bottom: 50px;
+		margin-top: 10px;
+	}
+	.description p
+	{
+		margin:10px;
+	}
+	
+	.comments
+	{
+		width: calc(100% - 50px);
+		margin-bottom: 50px;
+	}
+	.comment
+	{
+		width: calc(100% - 85px);
+		padding: 20px;
+		background-color: #E5E5E5;
+		border: solid 1px #999999; 
+		margin-top: 10px;
+	}
+	.comment h3
+	{
+		color: #335577;
+		font-size: 1em;
+	}
+	::-webkit-scrollbar {
+	
+		width: 10px;
+		background: rgba( 99,99,99,0);
+	}
+	::-webkit-scrollbar:horizontal
+	{
+		height: 0px;
+	}
+	
+	::-webkit-scrollbar-track {
+		background: rgba(99,99,99,.1)
+	
+	}
+	::-webkit-scrollbar-track:hover {
+	
+	}
+	::-webkit-scrollbar-thumb {
+		background-color: rgba(99, 22, 100, .1);
+	
+	}
+	::-webkit-scrollbar-thumb:hover {
+		transition:background-color 5s;	
+		background-color: rgba(99, 22, 100, .5);
+	}
+	
+	
+
+</style>
+</head>
+<div class="wrapper"> 
+	<div class="header">
+		<a class="leftlink" href="">YourTube</a>
+		<input class="searchbox"> 
+		<a class="rightlink" href="" id="account">Account</a>
+		<a class="rightlink" href="">Browse</a>
+		<a class="rightlink" href="">Playlists</a>
+		<div class="account">
+			<a href="">Upload </a><br>
+			<a href="">Profile </a><br>
+			<a href="">Settings </a><br>
+			<a href="">Sign Out </a>
+		</div>
+	</div>
+		
+	
+	<div class="menu">
+		<form>
+			<input type="radio" id="radio1" name="radios" value="subs" checked onclick="subs()">
+   				<label for="radio1" onclick="subs()">Subs</label>
+			<input type="radio" id="radio2" name="radios"value="channel" onclick="channel()">
+   				<label for="radio2" onclick="channel()">Channel</label>
+			<input type="radio" id="radio3" name="radios" value="suggested" onclick="suggested()">
+   				<label for="radio3" onclick="suggested()">Suggested</label> 
+		</form>
+		<p id="subs">
+			Here are the subs!
+		</p>
+		<p id="channel">
+			Here's more by that channel!
+		</p>
+		<p id="suggested">
+			Here's some suggested vids!
+		</p>
+	</div>
+	
+	<div class="otherAd">
+		Ad placement #2
+	</div>
+	<div class="content">
+		<div class="bannerAd">
+			Ad placement #1
+		</div>'
+		{% block content %}
+		<div class="h1">
+		
+		
+		{{ video.title }}
+		</div>
+		<br>
+		
+		<video height="420" width="720" id="video" data-setup='{ "controls": true, "autoplay": false, "preload": "auto" }' class="video-js vjs-default-skin"   controls>	
+  {% for videofile in video.video_files.all %}
+            <source src="{{ videofile.url }}" type="{{ videofile.format }}"/>
         {% endfor %}
-    </video>
-    <hr>
     <div class="large-9 columns">
         <strong>Uploaded by {{ video.uploader.nickname }} to {{ video.channel.name }} at {{ video.uploaded_date|date:"DATETIME_FORMAT" }}</strong>
         <br>
         {{ video.description }}
     </div>
-    <div class="large-3 columns">
-        Lorem ipsum I'll put some stuff here later
-    </div>
-    <hr>
-    <div class="comments">
-        <h2>Comments go here some time later :D</h2>
-    </div>
-    <script type="text/javascript">
-      // Once the video is ready
-      $(".bitvid-video").ready(function(){
-        var myPlayer = $(".bitvid-video");
-        var aspectRatio = 16/9;
+Your browser does not support the video tag.
+</video> 
+<!-- Quality -->
 
-        function resizeVideoJS(){
-          var width = $(".bitvid-video").width();
-          $(".bitvid-video").height(width / aspectRatio);
-        }
+<style>
+@charset "utf-8";
 
-        resizeVideoJS();
-        window.onresize = resizeVideoJS;
-        setInterval(resizeVideoJS, 50);
-      });
-    </script>
+/*
+You are free to style the button however you wish. I plan to use
+an icon from my site's own icon font to make it more visible. These
+are just basic styles to make it look ok with plain text.
+*/
 
-{% endblock %}
+/* Position the button */
+.vjs-res-button {
+	float: right;
+	line-height: 3em;
+}
+
+/* Don't show hover effects on title */
+ul li.vjs-menu-title.vjs-res-menu-title:hover {
+	cursor: default;
+	background-color: transparent;
+	color: #CCC;
+	
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+</style>
+
+<script >
+plugins : { resolutionSelector : {
+    force_types : [ 'video/mp4', 'video/webm' ],
+    default_res : "360"
+} }
+ </script>
+		<div class="description">
+			<p>
+				This is the description. WUDDUP?!?!?!?
+			</p>
+		</div>
+		<h2>Comments</h2>
+		<div class="comments">
+			<div class="comment"> <h3>Dolphman</h3><p>First!</p> <br>
+				<div class="comment" style="background-color: white"> <h3>CoolerThenU</h3><p>No one cairs! </p> <br>
+					<div class="comment"> <h3>420FTW</h3><p>Cares* </p>
+					</div>
+				</div>
+			</div>
+			<div class="comment">
+				<h3>GORDANFREEWOMAN</h3><p>THIS</p>
+			</div>
+		</div>
+	</div>
+</div>
+<address> 
+</html>
+{% extends "base.html" %}
