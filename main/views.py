@@ -10,6 +10,10 @@ from main.view_utils import *
 import re
 
 
+from main.services import ChannelService
+from main.exceptions import ModelSaveException
+
+
 def home(request):
     return render_with_context(request, "home.html")
 
@@ -84,22 +88,14 @@ def create_channel(request):
 
         return render_with_context(request, "create_channel.html")
     else:
+        
         user = get_user(request)
         name = request.POST.get("name", "")
 
-        channel = Channel(name=name)
         try:
-            channel.save()
-            channel.members.add(user) # Channel needs to be saved before we can add a relationshp
-            channel.full_clean() # validate
-            channel.save()
-
-        except IntegrityError: #
-            return render_with_context(request, "create_channel.html",{"error":"Channel with this name already exists"})
-
-        except ValidationError, e:
-            non_field_errors = e.message_dict[NON_FIELD_ERRORS]
-            return render_with_context(request, "create_channel.html",{"error":non_field_errors})
+            ChannelService.create(name, user)
+        except ModelSaveException as e:
+            return render_with_context(request, "create_channel.html",{"error":e.message})
         
         return HttpResponseRedirect(reverse("channels"))
 
