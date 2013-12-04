@@ -3,7 +3,8 @@ import django.contrib.auth.hashers
 import django.core.exceptions
 from django.db import models
 import random
-
+from django.core.exceptions import ValidationError
+import re
 
 class Channel(models.Model):
     name = models.CharField(max_length=64, unique=True)
@@ -19,6 +20,12 @@ class Channel(models.Model):
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
     subscribers = models.ManyToManyField('User', related_name="subscriptions")
 
+    def clean(self):
+        if len(self.name) < 2:
+            raise ValidationError('Name is to short (<2 Chars)')
+
+        if not re.match(r'^[A-Za-z0-9_-]+$', self.name):
+            raise ValidationError("Name must only contain letters, numbers, underscores and hyphens.")
 
 class Video(models.Model):
     STATUS_UPLOADING = 'UP'

@@ -2,6 +2,8 @@ import boto.s3.connection
 import boto.s3.key
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
+from django.db import IntegrityError
 import bitvid.dbinfo
 from main.models import *
 from main.view_utils import *
@@ -85,20 +87,20 @@ def create_channel(request):
         user = get_user(request)
         name = request.POST.get("name", "")
 
-        if name == "":
-            return render_with_context(request, "create_channel.html", {"error": "Name must not be empty."})
+        channel = Channel(name=name)
+        try:
+            channel.save()
+            channel.members.add(user) # Channel needs to be saved before we can add a relationshp
+            channel.full_clean() # validate
+            channel.save()
 
-        if not re.match(r'^[A-Za-z0-9_-]+$', name):
-            return render_with_context(request, "create_channel.html", {"error": "Name must only contain letters, numbers, underscores and hyphens."})
+        except IntegrityError: #
+            return render_with_context(request, "create_channel.html",{"error":"Channel with this name already exists"})
 
-        if Channel.objects.filter(name=name).exists():
-            render_with_context(request, "create_channel.html", {"error": "A channel with that name already exists."})
-
-        channel = Channel.objects.create()
-        channel.name = name
-        channel.members.add(user)
-        channel.save()
-
+        except ValidationError, e:
+            non_field_errors = e.message_dict[NON_FIELD_ERRORS]
+            return render_with_context(request, "create_channel.html",{"error":non_field_errors})
+        
         return HttpResponseRedirect(reverse("channels"))
 
 def upload(request):
