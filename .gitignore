@@ -2,5 +2,6 @@
 *.pot
 *.pyc
 local_settings.py
+bitvid/awsinfo.py
 .idea/
 *.db
