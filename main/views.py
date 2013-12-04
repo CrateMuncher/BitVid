@@ -66,7 +66,8 @@ def logout(request):
     return response
 
 def view_channel(request, channel):
-    pass
+    ch = Channel.objects.get(name=channel)
+    return render_with_context(request, "view_channel.html", {"channel": ch})
 
 def channels(request):
     if get_user(request) is None:
