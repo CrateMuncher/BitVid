@@ -1,6 +1,8 @@
 import boto.s3.connection
 import boto.s3.key
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.views.generic import TemplateView, CreateView
+from django.shortcuts import render_to_response, render
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from django.db import IntegrityError
@@ -16,7 +18,7 @@ def home(request):
 
 def login(request):
     if request.method == "GET":
-        return render_with_context(request, "login.html")
+        return render(request,"login.html")
     else:
         post_data = request.POST
 
@@ -26,11 +28,11 @@ def login(request):
             response.set_cookie('login_token', user.login_token)
             return response
         else:
-            return render_with_context(request, "login.html", {"error": "Invalid username or password."})
+            return render(request,"login.html", {"error": "Invalid username or password."})
 
 def signup(request):
     if request.method == "GET":
-        return render_with_context(request, "signup.html")
+        return render(request,"signup.html")
     else:
         post_data = request.POST
 
