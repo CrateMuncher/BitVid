@@ -1,6 +1,20 @@
 import django.http
 import django.template
 import django.template.loader
+from django.template import RequestContext
+
+def add_user_context(request):
+    """
+    Implements a custom context process that automatically sets the value of
+    the 'logged_in_user' variable for all requests.
+    """
+    context = { 'logged_in_user' : None }
+    if 'login_token' in request.COOKIES:
+        user = User.authenticate_token(request.COOKIES["login_token"])
+        context['logged_in_user'] = user
+
+    return context
+
 from main.models import *
 
 def render_with_context(request, template_name, context_dict={}):
