@@ -70,7 +70,7 @@ class User(models.Model):
     )
     username = models.CharField(max_length=64, unique=True, default="")
     password = models.CharField(max_length=256, default="")
-    email = models.CharField(max_length=256, default="")
+    email = models.EmailField(max_length=256, default="")
     nickname = models.CharField(max_length=64, default="")
 
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
