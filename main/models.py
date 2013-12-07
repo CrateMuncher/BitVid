@@ -7,6 +7,7 @@ import random
 from django.contrib.auth.models import AbstractBaseUser
 from django.core.exceptions import ValidationError
 import re
+from django.utils import timezone
 
 class Channel(models.Model):
     name = models.CharField(max_length=64, unique=True)
