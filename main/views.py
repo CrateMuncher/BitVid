@@ -8,12 +8,12 @@ from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from django.db import IntegrityError
 import bitvid.dbinfo
 from main.models import *
-from main.view_utils import *
+from main.view_utils import get_user
 import re
 
 
 def home(request):
-    return render_with_context(request, "home.html")
+    return render(request, "home.html")
 
 
 def login(request):
@@ -41,26 +41,26 @@ def signup(request):
         email = post_data.get("email", "")
 
         if username == "":
-            return render_with_context(request, "signup.html", {"error": "Username must not be empty."})
+            return render(request, "signup.html", {"error": "Username must not be empty."})
 
         if password == "":
-            return render_with_context(request, "signup.html", {"error": "Password must not be empty."})
+            return render(request, "signup.html", {"error": "Password must not be empty."})
 
         if email == "":
-            return render_with_context(request, "signup.html", {"error": "E-mail must not be empty."})
+            return render(request, "signup.html", {"error": "E-mail must not be empty."})
 
         if not re.match(r'^[A-Za-z0-9_]+$', username):
-            return render_with_context(request, "signup.html", {"error": "Username must only contain letters, numbers and underscores."})
+            return render(request, "signup.html", {"error": "Username must only contain letters, numbers and underscores."})
 
         if not re.match(r'^.{7,}$', password):
-            return render_with_context(request, "signup.html", {"error": "Password must be at least 7 characters long."})
+            return render(request, "signup.html", {"error": "Password must be at least 7 characters long."})
 
         if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-            return render_with_context(request, "signup.html", {"error": "E-mail must be valid."})
+            return render(request, "signup.html", {"error": "E-mail must be valid."})
 
         user = User.signup(username, password, email)
         if user is None:
-            return render_with_context(request, "signup.html", {"error": "A user with that already exists."})
+            return render(request, "signup.html", {"error": "A user with that already exists."})
         user.save()
         return HttpResponseRedirect(reverse("login"))
 
@@ -71,20 +71,20 @@ def logout(request):
 
 def view_channel(request, channel):
     ch = Channel.objects.get(name=channel)
-    return render_with_context(request, "view_channel.html", {"channel": ch})
+    return render(request, "view_channel.html", {"channel": ch})
 
 def channels(request):
     if get_user(request) is None:
         return HttpResponseRedirect(reverse("login"))
 
-    return render_with_context(request, "channels.html")
+    return render(request, "channels.html")
 
 def create_channel(request):
     if request.method == "GET":
         if get_user(request) is None:
             return HttpResponseRedirect(reverse("login"))
 
-        return render_with_context(request, "create_channel.html")
+        return render(request, "create_channel.html")
     else:
         user = get_user(request)
         name = request.POST.get("name", "")
@@ -97,11 +97,11 @@ def create_channel(request):
             channel.save()
 
         except IntegrityError: #
-            return render_with_context(request, "create_channel.html",{"error":"Channel with this name already exists"})
+            return render(request, "create_channel.html",{"error":"Channel with this name already exists"})
 
         except ValidationError, e:
             non_field_errors = e.message_dict[NON_FIELD_ERRORS]
-            return render_with_context(request, "create_channel.html",{"error":non_field_errors})
+            return render(request, "create_channel.html",{"error":non_field_errors})
         
         return HttpResponseRedirect(reverse("channels"))
 
@@ -110,7 +110,7 @@ def upload(request):
         if get_user(request) is None:
             return HttpResponseRedirect(reverse("login"))
 
-        return render_with_context(request, "upload.html")
+        return render(request, "upload.html")
     else:
         if get_user(request) is None:
             return HttpResponseRedirect(reverse("login"))
@@ -182,10 +182,10 @@ def upload(request):
 
 def view_video(request, video_id):
     if not Video.objects.filter(pk=video_id).exists():
-        render_with_context(request, "notfound.html", {"error": "Video not found."})
+        render(request, "notfound.html", {"error": "Video not found."})
 
     video = Video.objects.get(pk=video_id)
-    return render_with_context(request, "view_video.html", {"video": video})
+    return render(request, "view_video.html", {"video": video})
 
 def notfound(request):
-    render_with_context(request, "notfound.html")
+    render(request, "notfound.html")
