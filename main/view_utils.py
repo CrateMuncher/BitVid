@@ -9,10 +9,7 @@ def add_user_context(request):
     the 'logged_in_user' variable for all requests.
     """
     context = { 'logged_in_user' : None }
-    if 'login_token' in request.COOKIES:
-        user = User.authenticate_token(request.COOKIES["login_token"])
-        context['logged_in_user'] = user
-
+    context['logged_in_user'] = request.user
     return context
 
 from main.models import *

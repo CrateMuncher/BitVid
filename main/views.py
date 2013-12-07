@@ -6,6 +6,9 @@ from django.shortcuts import render_to_response, render
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from django.db import IntegrityError
+from django.contrib.auth import authenticate, login as auth_login,\
+    logout as auth_logout
+from django.contrib.auth.decorators import login_required
 import bitvid.dbinfo
 from main.models import *
 from main.view_utils import get_user
@@ -21,11 +24,12 @@ def login(request):
         return render(request,"login.html")
     else:
         post_data = request.POST
-
-        user = User.authenticate_credentials(post_data.get("username", ""), post_data.get("password", ""))
+        username = post_data.get("username")
+	password = post_data.get("password")
+	user = authenticate(username=post_data.get("username", ""), password=post_data.get("password",""))
         if user is not None:
+	    auth_login(request,user)
             response = HttpResponseRedirect(reverse("home"))
-            response.set_cookie('login_token', user.login_token)
             return response
         else:
             return render(request,"login.html", {"error": "Invalid username or password."})
@@ -65,28 +69,26 @@ def signup(request):
         return HttpResponseRedirect(reverse("login"))
 
 def logout(request):
+    auth_logout(request) 
     response = HttpResponseRedirect(reverse("login"))
-    response.delete_cookie("login_token")
     return response
 
 def view_channel(request, channel):
     ch = Channel.objects.get(name=channel)
     return render(request, "view_channel.html", {"channel": ch})
 
+@login_required
 def channels(request):
-    if get_user(request) is None:
-        return HttpResponseRedirect(reverse("login"))
-
+    
     return render(request, "channels.html")
 
+@login_required
 def create_channel(request):
     if request.method == "GET":
-        if get_user(request) is None:
-            return HttpResponseRedirect(reverse("login"))
 
         return render(request, "create_channel.html")
     else:
-        user = get_user(request)
+        user = request.user
         name = request.POST.get("name", "")
 
         channel = Channel(name=name)
@@ -105,17 +107,14 @@ def create_channel(request):
         
         return HttpResponseRedirect(reverse("channels"))
 
+@login_required
 def upload(request):
     if request.method == "GET":
-        if get_user(request) is None:
-            return HttpResponseRedirect(reverse("login"))
 
         return render(request, "upload.html")
     else:
-        if get_user(request) is None:
-            return HttpResponseRedirect(reverse("login"))
 
-        user = get_user(request)
+        user = request.user
         file = request.FILES.get("file", None)
 
         if file is None:

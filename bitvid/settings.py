@@ -15,7 +15,7 @@ MANAGERS = ADMINS
 DATABASES = bitvid.dbinfo.DATABASES
 
 #Set up the custom auth user
-AUTH_MODEL_USER = 'main.User'
+AUTH_USER_MODEL = 'main.User'
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts

@@ -79,6 +79,10 @@ class CustomUserManager(BaseUserManager):
         return self._create_user(username, email, password, False, False,
 	                         **extra_fields)
 
+    def create_superuser(self,username,email,password=None, **extra_fields):
+        return self._create_user(username,email,password,False,False, 
+	                         **extra_fields)
+
 class User(AbstractBaseUser):
     STATUS_UNCONFIRMED = 'UC'
     STATUS_ACTIVE = 'AC'
