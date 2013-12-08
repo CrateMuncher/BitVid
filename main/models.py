@@ -9,26 +9,7 @@ from django.core.exceptions import ValidationError
 import re
 from django.utils import timezone
 
-class Channel(models.Model):
-    name = models.CharField(max_length=64, unique=True)
 
-    STATUS_ACTIVE = 'AC'
-    STATUS_DELETED = 'DL'
-
-    STATUS_CHOICES = (
-        (STATUS_ACTIVE, 'Active'),
-        (STATUS_DELETED, 'Deleted'),
-    )
-
-    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
-    subscribers = models.ManyToManyField('User', related_name="subscriptions")
-
-    def clean(self):
-        if len(self.name) < 2:
-            raise ValidationError('Name is to short (<2 Chars)')
-
-        if not re.match(r'^[A-Za-z0-9_-]+$', self.name):
-            raise ValidationError("Name must only contain letters, numbers, underscores and hyphens.")
 
 class Video(models.Model):
     STATUS_UPLOADING = 'UP'
@@ -58,7 +39,7 @@ class Video(models.Model):
 
     uploaded_date = models.DateTimeField(auto_now_add=True)
 
-    channel = models.ForeignKey('Channel', related_name='video', blank=True, null=True)
+    channel = models.ForeignKey('channels.Channel', related_name='video', blank=True, null=True)
 
 class CustomUserManager(BaseUserManager):
     def _create_user(self, username, email, password, is_staff, is_superuser,
@@ -106,7 +87,7 @@ class User(AbstractBaseUser):
 
     tags = models.ManyToManyField('Tag', related_name="videoes", blank=True, null=True)
 
-    channels = models.ManyToManyField('Channel', related_name="members", blank=True, null=True)
+    channels = models.ManyToManyField('channels.Channel', related_name="members", blank=True, null=True)
 
     registration_date = models.DateTimeField(auto_now_add=True)
 
