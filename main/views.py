@@ -14,6 +14,7 @@ from django.utils.decorators import method_decorator
 import bitvid.dbinfo
 from main.models import *
 from main.view_utils import get_user
+from main.forms import ChannelForm
 import re
 
 #Used to mix in login required behavior to class based views
@@ -99,30 +100,24 @@ class ChannelListView(LoginRequiredMixin, TemplateView):
     template_name = "channels.html"
 
 
-@login_required
-def create_channel(request):
-    if request.method == "GET":
+class ChannelCreateView(LoginRequiredMixin, CreateView):
+    template_name = "create_channel.html"
+    model = Channel
+    form_class = ChannelForm
 
-        return render(request, "create_channel.html")
-    else:
-        user = request.user
-        name = request.POST.get("name", "")
+    def post(self, request, *args, **kwargs):
+        #We need to set this for the Channel.members field
+        self.user = request.user
+        return super(ChannelCreateView, self).post(request, *args, **kwargs)
 
-        channel = Channel(name=name)
-        try:
-            channel.save()
-            channel.members.add(user) # Channel needs to be saved before we can add a relationshp
-            channel.full_clean() # validate
-            channel.save()
+    def form_valid(self, form):
+        #self.form_valid = True #Needed so we know later we have a valid object
+        self.object = form.save()
+        self.object.members.add(self.user)
+        self.object.save()
 
-        except IntegrityError: #
-            return render(request, "create_channel.html",{"error":"Channel with this name already exists"})
+        return super(ChannelCreateView, self).form_valid(form)
 
-        except ValidationError, e:
-            non_field_errors = e.message_dict[NON_FIELD_ERRORS]
-            return render(request, "create_channel.html",{"error":non_field_errors})
-        
-        return HttpResponseRedirect(reverse("channels"))
 
 @login_required
 def upload(request):

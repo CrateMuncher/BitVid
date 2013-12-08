@@ -8,6 +8,9 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.core.exceptions import ValidationError
 import re
 from django.utils import timezone
+from django.core.urlresolvers import reverse
+
+
 
 class Channel(models.Model):
     name = models.CharField(max_length=64, unique=True)
@@ -22,6 +25,9 @@ class Channel(models.Model):
 
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
     subscribers = models.ManyToManyField('User', related_name="subscriptions")
+
+    def get_absolute_url(self):
+        return reverse("view_channel", kwargs={"slug": self.name}) 
 
     def clean(self):
         if len(self.name) < 2:
