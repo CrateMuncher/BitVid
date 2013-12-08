@@ -1,12 +1,17 @@
 import boto.s3.connection
 import boto.s3.key
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.views.generic import TemplateView, CreateView
+from django.shortcuts import render_to_response, render
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from django.db import IntegrityError
+from django.contrib.auth import authenticate, login as auth_login,\
+    logout as auth_logout
+from django.contrib.auth.decorators import login_required
 import bitvid.dbinfo
 from main.models import *
-from main.view_utils import *
+from main.view_utils import get_user
 import re
 
 
@@ -15,26 +20,27 @@ from main.exceptions import ModelSaveException
 
 
 def home(request):
-    return render_with_context(request, "home.html")
+    return render(request, "home.html")
 
 
 def login(request):
     if request.method == "GET":
-        return render_with_context(request, "login.html")
+        return render(request,"login.html")
     else:
         post_data = request.POST
-
-        user = User.authenticate_credentials(post_data.get("username", ""), post_data.get("password", ""))
+        username = post_data.get("username")
+	password = post_data.get("password")
+	user = authenticate(username=post_data.get("username", ""), password=post_data.get("password",""))
         if user is not None:
+	    auth_login(request,user)
             response = HttpResponseRedirect(reverse("home"))
-            response.set_cookie('login_token', user.login_token)
             return response
         else:
-            return render_with_context(request, "login.html", {"error": "Invalid username or password."})
+            return render(request,"login.html", {"error": "Invalid username or password."})
 
 def signup(request):
     if request.method == "GET":
-        return render_with_context(request, "signup.html")
+        return render(request,"signup.html")
     else:
         post_data = request.POST
 
@@ -43,73 +49,67 @@ def signup(request):
         email = post_data.get("email", "")
 
         if username == "":
-            return render_with_context(request, "signup.html", {"error": "Username must not be empty."})
+            return render(request, "signup.html", {"error": "Username must not be empty."})
 
         if password == "":
-            return render_with_context(request, "signup.html", {"error": "Password must not be empty."})
+            return render(request, "signup.html", {"error": "Password must not be empty."})
 
         if email == "":
-            return render_with_context(request, "signup.html", {"error": "E-mail must not be empty."})
+            return render(request, "signup.html", {"error": "E-mail must not be empty."})
 
         if not re.match(r'^[A-Za-z0-9_]+$', username):
-            return render_with_context(request, "signup.html", {"error": "Username must only contain letters, numbers and underscores."})
+            return render(request, "signup.html", {"error": "Username must only contain letters, numbers and underscores."})
 
         if not re.match(r'^.{7,}$', password):
-            return render_with_context(request, "signup.html", {"error": "Password must be at least 7 characters long."})
+            return render(request, "signup.html", {"error": "Password must be at least 7 characters long."})
 
         if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-            return render_with_context(request, "signup.html", {"error": "E-mail must be valid."})
+            return render(request, "signup.html", {"error": "E-mail must be valid."})
 
         user = User.signup(username, password, email)
         if user is None:
-            return render_with_context(request, "signup.html", {"error": "A user with that already exists."})
+            return render(request, "signup.html", {"error": "A user with that already exists."})
         user.save()
         return HttpResponseRedirect(reverse("login"))
 
 def logout(request):
+    auth_logout(request) 
     response = HttpResponseRedirect(reverse("login"))
-    response.delete_cookie("login_token")
     return response
 
 def view_channel(request, channel):
     ch = Channel.objects.get(name=channel)
-    return render_with_context(request, "view_channel.html", {"channel": ch})
+    return render(request, "view_channel.html", {"channel": ch})
 
+@login_required
 def channels(request):
-    if get_user(request) is None:
-        return HttpResponseRedirect(reverse("login"))
+    
+    return render(request, "channels.html")
 
-    return render_with_context(request, "channels.html")
-
+@login_required
 def create_channel(request):
     if request.method == "GET":
-        if get_user(request) is None:
-            return HttpResponseRedirect(reverse("login"))
 
-        return render_with_context(request, "create_channel.html")
+        return render(request, "create_channel.html")
     else:
-        
-        user = get_user(request)
+        user = request.user
         name = request.POST.get("name", "")
 
         try:
             ChannelService.create(name, user)
         except ModelSaveException as e:
-            return render_with_context(request, "create_channel.html",{"error":e.message})
+            return render(request, "create_channel.html",{"error":e.message})
         
         return HttpResponseRedirect(reverse("channels"))
 
+@login_required
 def upload(request):
     if request.method == "GET":
-        if get_user(request) is None:
-            return HttpResponseRedirect(reverse("login"))
 
-        return render_with_context(request, "upload.html")
+        return render(request, "upload.html")
     else:
-        if get_user(request) is None:
-            return HttpResponseRedirect(reverse("login"))
 
-        user = get_user(request)
+        user = request.user
         file = request.FILES.get("file", None)
 
         if file is None:
@@ -176,10 +176,10 @@ def upload(request):
 
 def view_video(request, video_id):
     if not Video.objects.filter(pk=video_id).exists():
-        render_with_context(request, "notfound.html", {"error": "Video not found."})
+        render(request, "notfound.html", {"error": "Video not found."})
 
     video = Video.objects.get(pk=video_id)
-    return render_with_context(request, "view_video.html", {"video": video})
+    return render(request, "view_video.html", {"video": video})
 
 def notfound(request):
-    render_with_context(request, "notfound.html")
+    render(request, "notfound.html")

@@ -14,6 +14,10 @@ MANAGERS = ADMINS
 
 DATABASES = bitvid.dbinfo.DATABASES
 
+#Set up the custom auth user
+AUTH_USER_MODEL = 'main.User'
+LOGIN_REDIRECT_URL = "/login"
+LOGIN_URL = "/login"
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['188.183.144.229', 'localhost', '127.0.0.1']
@@ -89,6 +93,18 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    "main.view_utils.add_user_context"
+)
+
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
