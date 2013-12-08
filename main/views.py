@@ -74,9 +74,6 @@ def logout(request):
     return response
 
 
-
-
-
 @login_required
 def upload(request):
     if request.method == "GET":
