@@ -1,7 +1,7 @@
 import boto.s3.connection
 import boto.s3.key
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, DetailView
 from django.shortcuts import render_to_response, render
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
@@ -9,15 +9,26 @@ from django.db import IntegrityError
 from django.contrib.auth import authenticate, login as auth_login,\
     logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
 import bitvid.dbinfo
 from main.models import *
 from main.view_utils import get_user
 import re
 
+#Used to mix in login required behavior to class based views
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
-def home(request):
-    return render(request, "home.html")
 
+class HomeView(TemplateView):
+    #View to handle the home page
+    template_name = "home.html"
+
+class NotFoundView(TemplateView):
+    template_name = "notfound.html"
 
 def login(request):
     if request.method == "GET":
@@ -73,14 +84,20 @@ def logout(request):
     response = HttpResponseRedirect(reverse("login"))
     return response
 
-def view_channel(request, channel):
-    ch = Channel.objects.get(name=channel)
-    return render(request, "view_channel.html", {"channel": ch})
+class ChannelDetailView(DetailView):
+    #A view for when users look for a single Channel
+    model = Channel #Tells the DetailView to use the Channel model
+    template_name = "view_channel.html" 
+    context_object = "channel" #Sets the name in the template context
 
-@login_required
-def channels(request):
-    
-    return render(request, "channels.html")
+    #Sets the field to use for lookups; in this case the name field
+    slug_field = "name"
+
+
+class ChannelListView(LoginRequiredMixin, TemplateView):
+    #A view for when users look at all channels
+    template_name = "channels.html"
+
 
 @login_required
 def create_channel(request):
@@ -186,5 +203,3 @@ def view_video(request, video_id):
     video = Video.objects.get(pk=video_id)
     return render(request, "view_video.html", {"video": video})
 
-def notfound(request):
-    render(request, "notfound.html")

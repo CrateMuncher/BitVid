@@ -21,4 +21,4 @@ urlpatterns = patterns('',
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns += staticfiles_urlpatterns()
 
-handler404 = "main.views.notfound"
+handler404 = "main.views.NotFoundView"
