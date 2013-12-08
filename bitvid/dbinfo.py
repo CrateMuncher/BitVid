@@ -9,7 +9,7 @@ DATABASES = {
 }
 
 try:
-	from awsinfo import AWS_ACCESSAWS_SECRET
+	from awsinfo import AWS_ACCESS,AWS_SECRET
 except:
 	print "="*80
 	print "WARNING: NO AWS CREDENTIALS GIVEN! Video Upload/View will not work"
