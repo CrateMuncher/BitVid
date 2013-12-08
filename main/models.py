@@ -2,8 +2,12 @@ import string
 import django.contrib.auth.hashers
 import django.core.exceptions
 from django.db import models
+from django.contrib.auth.models import BaseUserManager
 import random
-
+from django.contrib.auth.models import AbstractBaseUser
+from django.core.exceptions import ValidationError
+import re
+from django.utils import timezone
 
 class Channel(models.Model):
     name = models.CharField(max_length=64, unique=True)
@@ -19,6 +23,12 @@ class Channel(models.Model):
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
     subscribers = models.ManyToManyField('User', related_name="subscriptions")
 
+    def clean(self):
+        if len(self.name) < 2:
+            raise ValidationError('Name is to short (<2 Chars)')
+
+        if not re.match(r'^[A-Za-z0-9_-]+$', self.name):
+            raise ValidationError("Name must only contain letters, numbers, underscores and hyphens.")
 
 class Video(models.Model):
     STATUS_UPLOADING = 'UP'
@@ -50,8 +60,31 @@ class Video(models.Model):
 
     channel = models.ForeignKey('Channel', related_name='video', blank=True, null=True)
 
+class CustomUserManager(BaseUserManager):
+    def _create_user(self, username, email, password, is_staff, is_superuser,
+                     **extra_fields):
+        now = timezone.now()
 
-class User(models.Model):
+	if not username:
+	    raise ValueError("The username cannot be blank")
+        email = self.normalize_email(email)
+
+	user = self.model(username=email,last_login=now, registration_date=now,
+	                  **extra_fields)
+        user.set_password(password)
+	user.save()
+
+	return user
+
+    def create_user(self, username, email, password=None, **extra_fields):
+        return self._create_user(username, email, password, False, False,
+	                         **extra_fields)
+
+    def create_superuser(self,username,email,password=None, **extra_fields):
+        return self._create_user(username,email,password,False,False, 
+	                         **extra_fields)
+
+class User(AbstractBaseUser):
     STATUS_UNCONFIRMED = 'UC'
     STATUS_ACTIVE = 'AC'
     STATUS_DISABLED = 'DS'
@@ -61,9 +94,10 @@ class User(models.Model):
         (STATUS_ACTIVE, 'Active'),
         (STATUS_DISABLED, 'Disabled')
     )
+
+
     username = models.CharField(max_length=64, unique=True, default="")
-    password = models.CharField(max_length=256, default="")
-    email = models.CharField(max_length=256, default="")
+    email = models.EmailField(max_length=256, default="")
     nickname = models.CharField(max_length=64, default="")
 
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
@@ -75,6 +109,12 @@ class User(models.Model):
     channels = models.ManyToManyField('Channel', related_name="members", blank=True, null=True)
 
     registration_date = models.DateTimeField(auto_now_add=True)
+
+    #Used by Django's built-in auth system
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+    objects = CustomUserManager()
+
 
     @staticmethod
     def signup(username, password, email):
@@ -123,7 +163,7 @@ class User(models.Model):
         self.save()
         return new_token
 
-
+			 
 class Comment(models.Model):
     upload_date = models.DateTimeField(auto_now_add=True)
 
