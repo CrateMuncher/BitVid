@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^video/(?P<video_id>\d+)', 'main.views.view_video', name='view_video'),
     url(r'^watch/(?P<video_id>\d+)', 'main.views.view_video', name='view_video'),
     url(r'^(?P<video_id>\d+)', 'main.views.view_video', name='view_video'),
+    url(r'^search/', include('search.urls')),
     # Examples:
     # url(r'^$', 'bitvid.views.home', name='home'),
     # url(r'^bitvid/', include('bitvid.foo.urls')),
