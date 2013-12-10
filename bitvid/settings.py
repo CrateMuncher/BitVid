@@ -14,6 +14,7 @@ MANAGERS = ADMINS
 
 from bitvid.dbinfo import DATABASES, HAYSTACK_CONNECTIONS
 
+HAYSTACK_SIGNAL_PROCESSOR = 'search.signalProcessors.IndexerSignalProcessor'
 #Set up the custom auth user
 AUTH_USER_MODEL = 'main.User'
 LOGIN_REDIRECT_URL = "/login"
