@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from main.models import User
+from main.models import User, Channel
 
 class SignupForm(ModelForm):
 
@@ -11,3 +11,19 @@ class SignupForm(ModelForm):
     class Meta:
         model = User
 	fields = ["username", "password", "email"]
+
+
+class LoginForm(ModelForm):
+
+    class Meta:
+        model = User
+        fields = ["username","password"]
+
+
+class ChannelForm(ModelForm):
+
+    class Meta:
+        model = Channel
+        fields = ["name"]
+
+
