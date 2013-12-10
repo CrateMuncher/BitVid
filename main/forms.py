@@ -20,10 +20,5 @@ class LoginForm(ModelForm):
         fields = ["username","password"]
 
 
-class ChannelForm(ModelForm):
-
-    class Meta:
-        model = Channel
-        fields = ["name"]
 
 

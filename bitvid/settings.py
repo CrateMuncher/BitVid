@@ -12,7 +12,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = bitvid.dbinfo.DATABASES
+from bitvid.dbinfo import DATABASES, HAYSTACK_CONNECTIONS
 
 #Set up the custom auth user
 AUTH_USER_MODEL = 'main.User'
@@ -134,6 +134,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'haystack',
+    'channels',
     'main',
     'south',
 )

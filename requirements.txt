@@ -1,3 +1,8 @@
 Django==1.6
 South==0.8.4
 boto==2.19.0
+django-haystack==2.1.0
+pyelasticsearch==0.6.1
+requests==2.1.0
+simplejson==3.3.1
+six==1.4.1
