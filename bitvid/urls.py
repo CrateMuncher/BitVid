@@ -7,6 +7,8 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     #'main' app urls module
     url(r'', include('main.urls')),
+    url(r'^channel/', include('channels.urls')),
+    url(r'^search/', include('search.urls')),
     # Examples:
     # url(r'^$', 'bitvid.views.home', name='home'),
     # url(r'^bitvid/', include('bitvid.foo.urls')),

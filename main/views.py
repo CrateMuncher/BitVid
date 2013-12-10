@@ -14,7 +14,6 @@ from django.utils.decorators import method_decorator
 import bitvid.dbinfo
 from main.models import *
 from main.view_utils import get_user
-from main.forms import ChannelForm
 import re
 
 #Used to mix in login required behavior to class based views
@@ -84,39 +83,6 @@ def logout(request):
     auth_logout(request) 
     response = HttpResponseRedirect(reverse("login"))
     return response
-
-class ChannelDetailView(DetailView):
-    #A view for when users look for a single Channel
-    model = Channel #Tells the DetailView to use the Channel model
-    template_name = "view_channel.html" 
-    context_object = "channel" #Sets the name in the template context
-
-    #Sets the field to use for lookups; in this case the name field
-    slug_field = "name"
-
-
-class ChannelListView(LoginRequiredMixin, TemplateView):
-    #A view for when users look at all channels
-    template_name = "channels.html"
-
-
-class ChannelCreateView(LoginRequiredMixin, CreateView):
-    template_name = "create_channel.html"
-    model = Channel
-    form_class = ChannelForm
-
-    def post(self, request, *args, **kwargs):
-        #We need to set this for the Channel.members field
-        self.user = request.user
-        return super(ChannelCreateView, self).post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        #self.form_valid = True #Needed so we know later we have a valid object
-        self.object = form.save()
-        self.object.members.add(self.user)
-        self.object.save()
-
-        return super(ChannelCreateView, self).form_valid(form)
 
 
 @login_required
@@ -197,4 +163,3 @@ def view_video(request, video_id):
 
     video = Video.objects.get(pk=video_id)
     return render(request, "view_video.html", {"video": video})
-
