@@ -13,6 +13,7 @@ from django.utils.decorators import method_decorator
 
 import bitvid.dbinfo
 from main.models import *
+from channels.models import Channel
 from main.view_utils import get_user
 import re
 
