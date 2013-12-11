@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
+
 import re
 
 class Channel(models.Model):
