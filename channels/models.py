@@ -25,5 +25,5 @@ class Channel(models.Model):
         if len(self.name) < 2:
             raise ValidationError('Name is to short (<2 Chars)')
 
-        if not re.match(r'^[A-Za-z0-9_-]+$', self.name):
+        if not re.match(r'^\w+$', self.name):
             raise ValidationError("Name must only contain letters, numbers, underscores and hyphens.")
