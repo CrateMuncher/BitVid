@@ -18,6 +18,11 @@ from channels.models import Channel
 from main.view_utils import get_user
 import re
 
+try:
+    from bitvid.settings import VIDEO_BUCKET_NAME
+except:
+    VIDEO_BUCKET_NAME = "bitvid-video"
+
 #Used to mix in login required behavior to class based views
 class LoginRequiredMixin(object):
     @method_decorator(login_required)
@@ -144,13 +149,13 @@ def upload(request):
 
         conn = boto.s3.connection.S3Connection(bitvid.dbinfo.AWS_ACCESS, bitvid.dbinfo.AWS_SECRET)
 
-        bucket = conn.get_bucket("bitvid-video")
+        bucket = conn.get_bucket(VIDEO_BUCKET_NAME)
         bucket.set_acl("public-read")
         key = boto.s3.key.Key(bucket)
 
         video_path = str(video.id) + "/" + "original.mp4"
 
-        video_file.url = "http://d6iy9bzn1qbz8.cloudfront.net/" + video_path
+        video_file.url = "http://"+VIDEO_BUCKET_NAME +".s3.amazonaws.com/"+video_path #"http://d6iy9bzn1qbz8.cloudfront.net/" + video_path
 
         key.key = video_path
         key.set_contents_from_filename(file.temporary_file_path())
