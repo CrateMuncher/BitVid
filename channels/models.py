@@ -17,6 +17,7 @@ class Channel(models.Model):
 
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
     subscribers = models.ManyToManyField('auth.user', related_name="subscriptions")
+    members = models.ManyToManyField('auth.user', related_name="members")
 
     def get_absolute_url(self):
         return reverse("view_channel", kwargs={"slug": self.name}) 
