@@ -22,7 +22,7 @@ Windows:
 Setup the Database
 ```
 /BitVid/BitVid > python manage.py syncdb
-/BitVid/BitVid > python mnage.py migrate
+/BitVid/BitVid > python manage.py migrate
 ```
 
 Setup the Search
