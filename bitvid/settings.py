@@ -16,9 +16,9 @@ from bitvid.dbinfo import DATABASES, HAYSTACK_CONNECTIONS
 
 HAYSTACK_SIGNAL_PROCESSOR = 'search.signalProcessors.IndexerSignalProcessor'
 #Set up the custom auth user
-AUTH_USER_MODEL = 'main.User'
-LOGIN_REDIRECT_URL = "/login"
-LOGIN_URL = "/login"
+#AUTH_USER_MODEL = 'main.User'
+LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "/accounts/login/"
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['188.183.144.229', 'localhost', '127.0.0.1']
@@ -132,7 +132,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'haystack',

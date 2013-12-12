@@ -6,8 +6,9 @@ from django.shortcuts import render_to_response, render
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from django.db import IntegrityError
-from django.contrib.auth import authenticate, login as auth_login,\
-    logout as auth_logout
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -31,24 +32,27 @@ class HomeView(TemplateView):
 class NotFoundView(TemplateView):
     template_name = "notfound.html"
 
-def login(request):
+"""def login(request):
     if request.method == "GET":
         return render(request,"login.html")
     else:
         post_data = request.POST
         username = post_data.get("username")
-	password = post_data.get("password")
-	user = authenticate(username=post_data.get("username", ""), password=post_data.get("password",""))
+        password = post_data.get("password")
+        user = authenticate(username=username, password=password)
         if user is not None:
-	    auth_login(request,user)
-            response = HttpResponseRedirect(reverse("home"))
-            return response
+            # the password verified for the user
+            if user.is_active:
+                response = HttpResponseRedirect(reverse("home"))
+                return response
+            else:
+                return render(request,"login.html", {"error": "Account suspended"})
         else:
-            return render(request,"login.html", {"error": "Invalid username or password."})
+            return render(request,"login.html", {"error": "Invalid username or password."})"""
 
 def signup(request):
     if request.method == "GET":
-        return render(request,"signup.html")
+        return render(request,"registration/signup.html")
     else:
         post_data = request.POST
 
@@ -57,26 +61,26 @@ def signup(request):
         email = post_data.get("email", "")
 
         if username == "":
-            return render(request, "signup.html", {"error": "Username must not be empty."})
+            return render(request, "registration/signup.html", {"error": "Username must not be empty."})
 
         if password == "":
-            return render(request, "signup.html", {"error": "Password must not be empty."})
+            return render(request, "registration/signup.html", {"error": "Password must not be empty."})
 
         if email == "":
-            return render(request, "signup.html", {"error": "E-mail must not be empty."})
+            return render(request, "registration/signup.html", {"error": "E-mail must not be empty."})
 
         if not re.match(r'^[A-Za-z0-9_]+$', username):
-            return render(request, "signup.html", {"error": "Username must only contain letters, numbers and underscores."})
+            return render(request, "registration/signup.html", {"error": "Username must only contain letters, numbers and underscores."})
 
         if not re.match(r'^.{7,}$', password):
-            return render(request, "signup.html", {"error": "Password must be at least 7 characters long."})
+            return render(request, "registration/signup.html", {"error": "Password must be at least 7 characters long."})
 
         if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-            return render(request, "signup.html", {"error": "E-mail must be valid."})
+            return render(request, "registration/signup.html", {"error": "E-mail must be valid."})
 
-        user = User.signup(username, password, email)
+        user = User.objects.create_user(username, email, password)
         if user is None:
-            return render(request, "signup.html", {"error": "A user with that already exists."})
+            return render(request, "registration/signup.html", {"error": "A user with that already exists."})
         user.save()
         return HttpResponseRedirect(reverse("login"))
 

@@ -30,18 +30,19 @@
                     <ul class="left">
                     </ul>
                     <ul class="right">
-                        {% if logged_in_user != None %}
+
+                        {% if logged_in_user.is_authenticated%}
                             <li class="has-dropdown not-click">
                                 <a>Logged in as {{ logged_in_user.username }}</a>
                                 <ul class="dropdown">
                                     <li><a href="{% url "channels" %}">My channels</a></li>
                                     <li><a href="{% url "upload" %}">Upload a video</a></li>
-                                    <li><a href="{% url "logout" %}">Log out</a></li>
+                                    <li><a href="{% url "logout" %}?next=/">Log out</a></li>
                                 </ul>
                             </li>
                         {% else %}
                             <li class="active"><a href="{% url "login" %}">Log in</a></li>
-                            <li><a href="{% url "signup" %}">Sign up</a></li>
+                            <li><a href="{% url "register" %}">Sign up</a></li>
                         {% endif %}
                     </ul>
                 </section>

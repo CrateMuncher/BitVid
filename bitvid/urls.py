@@ -1,12 +1,13 @@
 from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     #'main' app urls module
     url(r'', include('main.urls')),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^channel/', include('channels.urls')),
     url(r'^search/', include('search.urls')),
     # Examples:
@@ -17,7 +18,7 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
 )
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
