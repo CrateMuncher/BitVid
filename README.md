@@ -16,7 +16,8 @@ Linux:
 /BitVid/BitVid > source bin/activate
 Windows: 
 /BitVid/BitVid > Scripts\activate.bat
-/BitVid/BitVid > pip install requirements.txt
+
+/BitVid/BitVid > pip install -r requirements.txt
 ```
 
 Setup the Database
