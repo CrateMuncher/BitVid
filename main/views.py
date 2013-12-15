@@ -83,9 +83,10 @@ def signup(request):
         if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
             return render(request, "registration/signup.html", {"error": "E-mail must be valid."})
 
-        user = User.objects.create_user(username, email, password)
-        if user is None:
-            return render(request, "registration/signup.html", {"error": "A user with that already exists."})
+        try:
+            user = User.objects.create_user(username, email, password)
+        except IntegrityError:
+            return render(request, "registration/signup.html", {"error": "A user with that username already exists."})
         user.save()
         return HttpResponseRedirect(reverse("login"))
 
