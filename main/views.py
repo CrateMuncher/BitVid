@@ -56,6 +56,11 @@ class NotFoundView(TemplateView):
             return render(request,"login.html", {"error": "Invalid username or password."})"""
 
 def signup(request):
+    #Redirect the user to the main page
+    if request.user.is_active and request.user.is_authenticated:
+        response = HttpResponseRedirect(reverse("home"))
+        return response
+        
     if request.method == "GET":
         return render(request,"registration/signup.html")
     else:
