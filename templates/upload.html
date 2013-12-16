@@ -47,7 +47,7 @@
             </div>
             <div class="small-10 columns">
                 <select id="channel-label" required name="channel">
-                    {% for channel in logged_in_user.channels.all %}
+                    {% for channel in channels %}
                         <option value="{{ channel.id }}">{{ channel.name }}</option>
                     {% endfor %}
                 </select>
